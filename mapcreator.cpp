@@ -19,7 +19,9 @@ const char types[] = {'L', 'M', 'K', 'C'};
 int mptype[50][50];
 int kx[21], ky[21];
 button mnstype, addtype, mnsarmy, addarmy;
+button mnsrows, addrows, mnscols, addcols;
 int lastClickTime = clock();
+button bck;
 void PrintHumanBlock(int printColor){
 	if (humanChooseX){
 		// set color
@@ -37,7 +39,7 @@ void PrintHumanBlock(int printColor){
 	return;
 }
 void changeHumanChoose(){
-    if (click(l_mouse)){
+    if (click(l_mouse) || click(r_mouse)){
         int tx = humanChooseX, ty = humanChooseY;
         PrintHumanBlock(8);
 		Get_pos(mousePT);
@@ -46,6 +48,19 @@ void changeHumanChoose(){
 		humanChooseY = (mouX / 4) + 1;
 		if (humanChooseX < 1 || humanChooseX > mapRows || humanChooseY < 1 || humanChooseY > mapCols || mouY < 5)
             humanChooseX = tx, humanChooseY = ty, lastClickTime = clock();
+        if(click(r_mouse)){
+            int lstbl = generalsMap[humanChooseX][humanChooseY].belongTo;
+            mptype[humanChooseX][humanChooseY] = mptype[tx][ty];
+            generalsMap[humanChooseX][humanChooseY].type = generalsMap[tx][ty].type;
+            generalsMap[humanChooseX][humanChooseY].army = generalsMap[tx][ty].army;
+            if(generalsMap[humanChooseX][humanChooseY].type == 'K' && lstbl == 0)
+                generalsMap[humanChooseX][humanChooseY].belongTo = ++playerTotal;
+            if(generalsMap[humanChooseX][humanChooseY].type != 'K' && lstbl > 0){
+                for(int i = 1; i <= mapRows; i++) for(int j = 1; j <= mapCols; j++)
+                    if(generalsMap[i][j].belongTo > lstbl) generalsMap[i][j].belongTo--;
+                generalsMap[humanChooseX][humanChooseY].belongTo = 0; playerTotal--;
+            }
+        }
 		PrintHumanBlock(14);
     }
 }
@@ -197,6 +212,28 @@ void ShowGeneralsMap(){
 	output_color;
 	return;
 }
+void ResetWindow(){
+    int windowsRows, windowsCols;
+    windowsRows = 5 + mapRows * 3;
+	windowsCols = max(mapCols * 4 + 1, 35);
+	system(("mode con cols=" + to_string(windowsCols + 1) + " lines=" + to_string(windowsRows + 1)).c_str());
+	HideCursor();
+    system("cls");
+    ShowMapEdges();
+    Place(0, 0); printf("Gird Settings:\nType:\nArmy:");
+    mnstype = New_button(6, 1, 0, 2, "-");
+    addtype = New_button(12, 1, 0, 2, "+");
+    mnsarmy = New_button(6, 2, 0, 2, "-");
+    addarmy = New_button(12, 2, 0, 2, "+");
+    Place(15, 0); printf("Map Settings:");
+    Place(15, 1); printf("Rows:");
+    Place(15, 2); printf("Cols:");
+    mnsrows = New_button(21, 1, 0, 2, "-");
+    addrows = New_button(27, 1, 0, 2, "+");
+    mnscols = New_button(21, 2, 0, 2, "-");
+    addcols = New_button(27, 2, 0, 2, "+");
+    bck = New_button(windowsCols - 4, 0, 0, 4, "Back");
+}
 int main(int argc, char* argv[]){
     system("cls");
     if(argc > 1){
@@ -213,26 +250,12 @@ int main(int argc, char* argv[]){
         in.close();
     }
     else{
-        printf("Please input the map's rows:\n");
-        scanf("%d", &mapRows);
-        printf("Please input the map's columns:\n");
-        scanf("%d", &mapCols);
+        mapRows = 9, mapCols = 24;
         printf("Please input the map's name:\n");
         cin >> name; name += ".cmap";
         for(int i = 1; i <= mapRows; i++) for(int j = 1; j <= mapCols; j++) generalsMap[i][j].type = 'L';
     }
-    int windowsRows = 5 + mapRows * 3;
-	int windowsCols = mapCols * 4 + 1;
-	system(("mode con cols=" + to_string(windowsCols + 1) + " lines=" + to_string(windowsRows + 1)).c_str());
-	HideCursor();
-    system("cls");
-    ShowMapEdges();
-    Place(0, 0); printf("Gird Settings:\nType:\nArmy:");
-    mnstype = New_button(6, 1, 0, 2, "-");
-    addtype = New_button(12, 1, 0, 2, "+");
-    mnsarmy = New_button(6, 2, 0, 2, "-");
-    addarmy = New_button(12, 2, 0, 2, "+");
-    button bck = New_button(windowsCols - 4, 0, 0, 4, "Back");
+    ResetWindow();
     while(true){
         PrintHumanBlock(14);
 		Place(9, 1); printf("%c", generalsMap[humanChooseX][humanChooseY].type);
@@ -249,7 +272,43 @@ int main(int argc, char* argv[]){
 			printf("%de%d", currentArmy, theDigitsOfArmy);
 		}
 		else printf("%3d", currentArmy);
+        Place(24, 1); printf("%d", mapRows);
+        Place(24, 2); printf("%d", mapCols);
 		if(Click_button(bck)) break;
+		if(Click_button(mnsrows) && mapRows > 1){
+            for(int x = 1; x <= mapCols; x++) if(mptype[mapRows][x] == 2){
+                int tbl = generalsMap[mapRows][x].belongTo;
+                for(int i = 1; i <= mapRows; i++) for(int j = 1; j <= mapCols; j++)
+                    if(generalsMap[i][j].belongTo > tbl) generalsMap[i][j].belongTo--;
+                generalsMap[mapRows][x].belongTo = 0; playerTotal--;
+            }
+            mapRows--;
+            lastClickTime = clock();
+            ResetWindow();
+		}
+		if(Click_button(addrows) && mapRows <= 40){
+            mapRows++;
+            for(int x = 1; x <= mapCols; x++) mptype[mapRows][x] = 0, generalsMap[mapRows][x] = {0, 0, 'L'};
+            lastClickTime = clock();
+            ResetWindow();
+		}
+		if(Click_button(mnscols) && mapCols > 1){
+            for(int x = 1; x <= mapRows; x++) if(mptype[x][mapCols] == 2){
+                int tbl = generalsMap[x][mapCols].belongTo;
+                for(int i = 1; i <= mapRows; i++) for(int j = 1; j <= mapCols; j++)
+                    if(generalsMap[i][j].belongTo > tbl) generalsMap[i][j].belongTo--;
+                generalsMap[x][mapCols].belongTo = 0; playerTotal--;
+            }
+            mapCols--;
+            lastClickTime = clock();
+            ResetWindow();
+		}
+		if(Click_button(addcols) && mapCols <= 40){
+            mapCols++;
+            for(int x = 1; x <= mapRows; x++) mptype[x][mapCols] = 0, generalsMap[x][mapCols] = {0, 0, 'L'};
+            lastClickTime = clock();
+            ResetWindow();
+		}
 		if(Click_button(mnstype) && humanChooseX){
             if(mptype[humanChooseX][humanChooseY] == 2){
                 int tbl = generalsMap[humanChooseX][humanChooseY].belongTo;
