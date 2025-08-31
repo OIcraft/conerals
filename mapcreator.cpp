@@ -237,7 +237,7 @@ void ResetWindow(){
 int main(int argc, char* argv[]){
     system("cls");
     if(argc > 1){
-        name = argv[1], name += ".cmap";
+        name = argv[1];
         ifstream in(name);
         int tmp[128] = {};
         tmp['L'] = 0; tmp['M'] = 1;
@@ -248,8 +248,7 @@ int main(int argc, char* argv[]){
         for(int i = 1; i <= mapRows; i++) for(int j = 1; j <= mapCols; j++)
             (in >> generalsMap[i][j].type >> generalsMap[i][j].army), mptype[i][j] = tmp[generalsMap[i][j].type];
         in.close();
-    }
-    else{
+    }else{
         mapRows = 9, mapCols = 24;
         printf("Please input the map's name:\n");
         cin >> name; name += ".cmap";
