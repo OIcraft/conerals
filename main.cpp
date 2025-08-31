@@ -49,7 +49,7 @@ void CreateMap(){
 		}
 		Sleep(clickTimeDelay);
 		if(Click_button(bck)) break;
-		if(Click_button(smap)) system("cls"), system(("mapcreator.exe " + input("Please input the map's name:")).c_str()), needReflush = 1;
+		if(Click_button(smap)) system("cls"), system(("mapcreator.exe " + input("Please input the map's name:") + ".cmap").c_str()), needReflush = 1;
         if(Click_button(cmap)) system("cls"), system("mapcreator.exe"), needReflush = 1;
     }
     Sleep(80);
