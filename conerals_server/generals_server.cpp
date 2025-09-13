@@ -250,7 +250,7 @@ void WaitForWebPlayersDone(){
 	do{
 		Sleep(5); flag = 0;
 		for(int i = 1; i <= playerTotal; i++)
-			if(!isAI[i] && !playerDone[i]) flag = 1;
+			if(!isAI[i] && !playerDone[i] && !alreadyDead[i]) flag = 1;
 	}while(flag);
 	waitingForWebPlayers = 0;
 }
