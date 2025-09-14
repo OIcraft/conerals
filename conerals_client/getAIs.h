@@ -11,6 +11,7 @@
 #include ".\AI\DeepSeek.h"
 #include ".\AI\laser.h"
 #include ".\AI\aaa1145141919810.h"
+#include ".\AI\Developer.h"
 // initialize
 void Initialize(string currentAIname){
     if (currentAIname == "human"){
@@ -61,6 +62,10 @@ void Initialize(string currentAIname){
         aaa1145141919810::Init();
         return;
     }
+    else if (currentAIname == "Developer"){
+        Developer::Init();
+        return;
+    }
     return;
 }
 // get moves
@@ -101,6 +106,9 @@ movement GetMove(string currentAIname){
     }
     else if (currentAIname == "aaa1145141919810"){
         return aaa1145141919810::Move();
+    }
+    else if (currentAIname == "Developer"){
+        return Developer::Move();
     }
     return (movement){-1, -1, 0};
 }
