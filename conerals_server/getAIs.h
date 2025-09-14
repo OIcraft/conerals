@@ -6,10 +6,11 @@
 #include ".\AI\feiwu.h"
 #include ".\AI\PhiFFA.h"
 #include ".\AI\PhiCore.h"
-#include ".\AI\Explorer.h"
 #include ".\AI\DeepSeek.h"
 #include ".\AI\laser.h"
 #include ".\AI\aaa1145141919810.h"
+#include ".\AI\Explorer.h"
+#include ".\AI\Developer.h"
 // initialize
 void Initialize(string currentAIname){
     if (currentAIname == "example1"){
@@ -40,10 +41,6 @@ void Initialize(string currentAIname){
         PhiCore::Init();
         return;
     }
-    else if (currentAIname == "Explorer"){
-        Explorer::Init();
-        return;
-    }
     else if (currentAIname == "DeepSeek"){
         DeepSeek::Init();
         return;
@@ -54,6 +51,14 @@ void Initialize(string currentAIname){
     }
     else if (currentAIname == "aaa1145141919810"){
         aaa1145141919810::Init();
+        return;
+    }
+    else if (currentAIname == "Explorer"){
+        Explorer::Init();
+        return;
+    }
+    else if (currentAIname == "Developer"){
+        Developer::Init();
         return;
     }
     return;
@@ -81,9 +86,6 @@ movement GetMove(string currentAIname){
     else if (currentAIname == "PhiCore"){
         return PhiCore::Move();
     }
-    else if (currentAIname == "Explorer"){
-        return Explorer::Move();
-    }
     else if (currentAIname == "DeepSeek"){
         return DeepSeek::Move();
     }
@@ -92,6 +94,12 @@ movement GetMove(string currentAIname){
     }
     else if (currentAIname == "aaa1145141919810"){
         return aaa1145141919810::Move();
+    }
+    else if (currentAIname == "Explorer"){
+        return Explorer::Move();
+    }
+    else if (currentAIname == "Developer"){
+        return Developer::Move();
     }
     return (movement){-1, -1, 0};
 }
