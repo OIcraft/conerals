@@ -15,7 +15,7 @@ conerals_client\generals_server.cpp
 conerals_server\main_server.cpp
 ```
 
-编译选项：`-std=c++17 -D _WIN32_WINNT 0x0A00 -lws2_32`
+编译选项：`-std=c++17 -D _WIN32_WINNT=0x0A00 -lws2_32`
 
 编译完成后，运行 main.exe 即可
 
