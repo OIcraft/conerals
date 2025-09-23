@@ -9,7 +9,7 @@ namespace Developer{
 	vector<pair<int, int> > kingdom_edge;
 	stack<movement> movestack;
 	bool fighting, collecting;
-	bool vis[50][50], attack[50][50];
+	bool vis[50][50], attack[50][50], geted[50][50];
 	bool attacklist[50][50], isking[50][50];
 	queue<pair<int, int>> kings;
 	void Init(){
@@ -20,6 +20,7 @@ namespace Developer{
 		memset(attack, 0, sizeof attack);
 		memset(attacklist, 255, sizeof attacklist);
 		memset(isking, 0, sizeof isking);
+		memset(geted, 0, sizeof geted);
 	}
 	inline void readmap(){
 		for(int i = 1; i <= mapRows; i++) for(int j = 1; j <= mapCols; j++) m[i][j] = Ask(i, j);
@@ -35,13 +36,13 @@ namespace Developer{
 	inline void getedge(){
 		fighting = 0; kingdom_edge.clear();
 		for(int i = 1; i <= mapRows; i++) for(int j = 1; j <= mapCols; j++)
-			if(m[i][j].belongTo != myid && m[i][j].belongTo > 0){
-				attack[i][j] = 1; for(int f = 0; f < 4; f++){
-					int nx = i + dx[f], ny = j + dy[f];
-					if(m[nx][ny].belongTo == myid) kingdom_edge.push_back({nx, ny});
-				}
-			}else if(m[i][j].belongTo == myid) attack[i][j] = 0;
+			if(m[i][j].belongTo != myid && m[i][j].belongTo > 0) attack[i][j] = 1;
+			else if(m[i][j].belongTo == myid) attack[i][j] = 0;
 		for(int i = 1; i <= mapRows; i++) for(int j = 1; j <= mapCols; j++) fighting |= attack[i][j];
+		for(int i = 1; i <= mapRows; i++) for(int j = 1; j <= mapCols; j++) if(attack[i][j] && !geted[i][j])
+			for(int f = 0; f < 4; f++) if(m[i + dx[f]][j + dy[f]].belongTo == myid) kingdom_edge.push_back({i + dx[f], j + dy[f]});
+		if(kingdom_edge.empty()) for(int i = 1; i <= mapRows; i++) for(int j = 1; j <= mapCols; j++) if(attack[i][j])
+			for(int f = 0; f < 4; f++) if(m[i + dx[f]][j + dy[f]].belongTo == myid) kingdom_edge.push_back({i + dx[f], j + dy[f]});
 		if(kingdom_edge.empty()) for(int i = 1; i <= mapRows; i++) for(int j = 1; j <= mapCols; j++)
 			if(m[i][j].belongTo == 0) for(int f = 0; f < 4; f++){
 					int nx = i + dx[f], ny = j + dy[f];
@@ -71,6 +72,7 @@ namespace Developer{
 			if(!isking[i][j] && m[i][j].type == 'K') kings.push({i, j}), isking[i][j] = 1;
 		for(int i = 1; i <= mapRows; i++) for(int j = 1; j <= mapCols; j++)
 			if(m[i][j].belongTo >= 0 && (m[i][j].type != 'K' || m[i][j].belongTo == myid)) attacklist[i][j] = 0;
+		for(int i = 1; i <= mapRows; i++) for(int j = 1; j <= mapCols; j++) if(m[i][j].belongTo == myid) geted[i][j] = 1;
 	}
 	movement Move(){
 		round++; readmap(); if(!myid) getking(); getkings(); getedge();
